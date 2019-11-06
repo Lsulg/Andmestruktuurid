@@ -44,26 +44,41 @@ Wa, Zw, Za, wk, Wa, WW, W8, W_ */
 	char* m = str12;
 	char str13[16] = "W_";
 	char* n = str13;
-	
-	/*char removing[16] = "Bucdp";
-	char* b = removing;*/
-//	InsertNewObject(&pStruct, a, 21);
-//	InsertNewObject(&pStruct, b, 21);
-//	InsertNewObject(&pStruct, c, 21);
-//	InsertNewObject(&pStruct, d, 21);
-//	InsertNewObject(&pStruct, e, 21);
-//	InsertNewObject(&pStruct, f, 21);
-//	InsertNewObject(&pStruct, g, 21);
-//	InsertNewObject(&pStruct, h, 21);
-//	InsertNewObject(&pStruct, i, 21);
-//	InsertNewObject(&pStruct, j, 21);
-//	InsertNewObject(&pStruct, k, 21);
-//	InsertNewObject(&pStruct, l, 21);
-//	InsertNewObject(&pStruct, m, 21);
-//	InsertNewObject(&pStruct, n, 21);
+
+	InsertNewObject(&pStruct, a, 21);
+/*	InsertNewObject(&pStruct, b, 21);
+	InsertNewObject(&pStruct, c, 21);
+	InsertNewObject(&pStruct, d, 21);
+	InsertNewObject(&pStruct, e, 21);
+	InsertNewObject(&pStruct, f, 21);
+	InsertNewObject(&pStruct, g, 21);
+	InsertNewObject(&pStruct, h, 21);
+	InsertNewObject(&pStruct, i, 21);
+	InsertNewObject(&pStruct, j, 21);
+	InsertNewObject(&pStruct, k, 21);
+	InsertNewObject(&pStruct, l, 21);
+	InsertNewObject(&pStruct, m, 21);
+	InsertNewObject(&pStruct, n, 21); */
+
 	PrintObjects(pStruct);
-//	RemoveExistingObject(&pStruct, b);
-//	PrintObjects(pStruct);
+
+/*	RemoveExistingObject(&pStruct, a);
+	RemoveExistingObject(&pStruct, b);
+	RemoveExistingObject(&pStruct, c);
+	RemoveExistingObject(&pStruct, d);
+	RemoveExistingObject(&pStruct, e);
+	RemoveExistingObject(&pStruct, f);
+	RemoveExistingObject(&pStruct, g);
+	RemoveExistingObject(&pStruct, h);
+	RemoveExistingObject(&pStruct, i);
+	RemoveExistingObject(&pStruct, j);
+	RemoveExistingObject(&pStruct, k);
+	RemoveExistingObject(&pStruct, l);
+	RemoveExistingObject(&pStruct, m);
+	RemoveExistingObject(&pStruct, n);
+
+	printf("Removed\n");
+	PrintObjects(pStruct);*/
 	return 0;
 }
 void PrintObjects(HeaderA* pStruct6)
@@ -76,7 +91,6 @@ void PrintObjects(HeaderA* pStruct6)
 	while (1) //liikumine järgmise headerisse
 	{
 		i++;
-
 		if (pHeader == NULL)
 		{
 			break;
@@ -219,7 +233,7 @@ int InsertNewObject(HeaderA** pStruct6, char* pNewID, int NewCode)
 		}
 		if (!pHeader)
 		{
-			//printf("pheader->pNext was nullptr\n");
+			printf("pheader->pNext was nullptr\n");
 			break;
 		}
 		if (cBeingBuffer == pHeader->cBegin)
@@ -288,6 +302,7 @@ int InsertNewObject(HeaderA** pStruct6, char* pNewID, int NewCode)
 						prevObject = pObject9;
 						pObject9 = pObject9->pNext;
 						int cmpVaule = strcmp(newObject->pID, pObject9->pID);
+						int cmpVaule2 = strcmp(newObject->pID, pObject9->pNext->pID);
 						if (ObjectCounter == 0 && cmpVaule < 0) // esimene
 						{
 							newObject->pNext = pObject9;
@@ -303,10 +318,10 @@ int InsertNewObject(HeaderA** pStruct6, char* pNewID, int NewCode)
 							pHeader->pObject = newObject;
 							break;
 						}
-						else if (cmpVaule > 0 && newObject->pID < pObject9->pNext->pID) //keskmine
+						else if (cmpVaule < 0 && cmpVaule2 > 0 && ObjectCounter != 0) //keskmine
 						{
-							newObject->pNext = pObject9->pNext;
-							pObject9->pNext = newObject;
+							newObject->pNext = pObject9->pNext->pNext;
+							pObject9->pNext->pNext = newObject;
 							pHeader->pObject = firstObject;
 							break;
 						}
@@ -344,22 +359,18 @@ int InsertNewObject(HeaderA** pStruct6, char* pNewID, int NewCode)
 }
 Object9* RemoveExistingObject(HeaderA** pStruct6, char* pExistingID)
 {
-	char pNewIDBuffer[40];
-	char cBeingBuffer[16];
-
-	strcpy(pNewIDBuffer, pExistingID);
-	strncpy(cBeingBuffer, pNewIDBuffer, sizeof(16));
-	strncpy(cBeingBuffer, pNewIDBuffer, 1);
-	cBeingBuffer[1] = '\0';
-
 	if (!pExistingID)
 	{
 		return 0;
 	}
-
+	char pNewIDBuffer[40];
+	char cBeingBuffer[16];
+	strcpy(pNewIDBuffer, pExistingID);
+	strncpy(cBeingBuffer, pNewIDBuffer, sizeof(16));
+	strncpy(cBeingBuffer, pNewIDBuffer, 1);
+	cBeingBuffer[1] = '\0';
 	int i = 0;
-	//kontrollin kas pExistingID vastab formaadile
-	while (pExistingID != NULL)
+	while (pExistingID != NULL)	//kontrollin kas pExistingID vastab formaadile
 	{
 		if ('A' <= pExistingID[0] && pExistingID[0] <= 'Z')
 		{
@@ -385,7 +396,6 @@ Object9* RemoveExistingObject(HeaderA** pStruct6, char* pExistingID)
 		}
 		i++;
 	}
-	// if objekt was not found return 0
 	HeaderA* pHeader = *pStruct6;
 	HeaderA* prevpHeader = *pStruct6;
 	HeaderA* pHeaderTemp = NULL;
@@ -476,7 +486,6 @@ Object9* RemoveExistingObject(HeaderA** pStruct6, char* pExistingID)
 		prevpHeader = pHeader;
 		pHeader = pHeader->pNext;
 		HeaderCounter++;
-
 	}
 	return 0;
 }
