@@ -12,13 +12,14 @@ Object9* RemoveExistingObject(HeaderA** pStruct6, char* pExistingID);
 int InsertNewObject(HeaderA** pStruct6, char* pNewID, int NewCode);
 void PrintObjects(HeaderA* pStruct6);
 Node* CreateBinaryTree(HeaderA* pStruct6);
-/*void TreeTraversal(Node* pTree);
-Node* DeleteTreeNode(Node* pTree, unsigned long int Code);*/
+void TreeTraversal(Node* pTree);
+stack* Push(stack* pStack, void* pNode);
+stack* Pop(stack* pStack, void** pResult);
+Node* FindParentNode(Node* pTree, Node* childNode);
+Node* DeleteTreeNode(Node* pTree, unsigned long int Code);
 int main()
 {
 	HeaderA* pStruct = GetStruct6(9, 35);
-	/* testid Dx, Db, Dz, Dk, Aa, Wu,
-Wa, Zw, Za, wk, Wa, WW, W8, W_ */
 	char str[16] = "Dx";
 	char* a = str;
 	char str1[16] = "Db";
@@ -48,7 +49,7 @@ Wa, Zw, Za, wk, Wa, WW, W8, W_ */
 	char str13[16] = "W_";
 	char* n = str13;
 
-	printf("Algne\n");
+	/*	printf("Algne\n");
 	PrintObjects(pStruct);
 
 
@@ -67,9 +68,9 @@ Wa, Zw, Za, wk, Wa, WW, W8, W_ */
 	InsertNewObject(&pStruct, l, 21);
 	InsertNewObject(&pStruct, m, 21);
 	InsertNewObject(&pStruct, n, 21);
-
+	PrintObjects(pStruct);
 	printf("removed\n");
-	
+
 
 	RemoveExistingObject(&pStruct, a);
 	RemoveExistingObject(&pStruct, b);
@@ -86,17 +87,266 @@ Wa, Zw, Za, wk, Wa, WW, W8, W_ */
 	RemoveExistingObject(&pStruct, m);
 	RemoveExistingObject(&pStruct, n);
 
-	PrintObjects(pStruct);
+	PrintObjects(pStruct);*/
+	Node* tree;
+	tree = CreateBinaryTree(pStruct);
+	TreeTraversal(tree);
+	tree = DeleteTreeNode(tree, 123);
+	TreeTraversal(tree);
 	return 0;
+}
+Node* DeleteTreeNode(Node* pTree, unsigned long int Code)
+{
+	stack* pStack = 0;
+	Node* p1 = pTree;
+	Node* previous, *temp, *p2 = NULL;
+	if (!pTree)
+		return pTree;
+
+	pStack = Pop(pStack, (void**)& p2);
+	int i = 0;
+	do 
+	{
+		previous = FindParentNode(pTree, p2);
+//	2. Eemaldataval tipul ei ole tütartippe.
+		if (pTree->pLeft == NULL && pTree->pRight == NULL && ((((ob9*)p2->pObject)->Code) == Code))
+		{
+			if (previous->pLeft = p2)
+			{
+				previous->pLeft = NULL;
+			}
+			else
+			{
+				previous->pRight = NULL;
+			}
+			free(p2);
+			return pTree;
+		}
+//	3. Eemaldataval tipul on ainult parempoolne tütartipp.
+		if (pTree->pLeft == NULL && ((((ob9*)p2->pObject)->Code) == Code))
+		{
+			if (previous->pLeft == p2) {
+				previous->pLeft = p2->pRight;
+			}
+			else
+			{
+				previous->pRight = p2->pRight;
+			}
+
+			free(p2);
+			return pTree;
+		}
+//	4. Eemaldataval tipul on ainult vasakpoolne tütartipp.
+		if (pTree->pRight == NULL && ((((ob9*)p2->pObject)->Code) == Code))
+		{
+			if (previous->pLeft == p2) 
+			{
+				previous->pLeft = p2->pLeft;
+			}
+			else
+			{
+				previous->pRight = p2->pLeft;
+			}
+
+			free(p2);
+			return pTree;
+		}
+//	5. Eemaldataval tipul on mõlemad tütartipuud ehk sobib ka juureks.
+		if (pTree->pLeft != NULL && pTree->pRight != NULL && ((((ob9*)p2->pObject)->Code) == Code))
+		{
+			if (p2 == pTree)
+			{
+				pTree = p2->pRight;
+			}
+			else
+			{
+				if (previous->pLeft == p2) 
+				{
+					previous->pLeft = p2->pRight;
+				}
+				else
+				{
+					previous->pRight = p2->pRight;
+				}
+			}
+
+			temp = p2->pRight;
+			// Leian väiksima väärtuse paremast ahelast
+			while (true)
+			{
+				if (temp->pLeft == NULL)
+					break;
+				temp = temp->pLeft;
+			}
+
+			temp->pLeft = p2->pLeft;
+
+			free(p2);
+			return pTree;
+
+		}
+	}while (!(!pStack && !p1));
+	//	6. Etteantud koodiga kirjet ei olegi
+	printf("\n That code did not excist");
+	return pTree;
+}
+Node* FindParentNode(Node* pTree, Node* childNode)
+{
+	stack* pStack = 0;
+	Node* p1 = pTree, * p2;
+	if (!pTree)
+	{
+		printf("NULL");
+		return NULL;
+	}
+	do
+	{
+		while (p1)
+		{
+			pStack = Push(pStack, p1);
+			p1 = p1->pLeft;
+
+		}
+		pStack = Pop(pStack, (void**)& p2);
+
+		p1 = p2->pRight;
+		if (p2->pLeft == childNode) 
+		{
+			return p2;
+		}
+		if (p2->pRight == childNode) 
+		{
+			return p2;
+		}
+	} while (!(!pStack && !p1));
+	printf("NULL");
+	return NULL;
+}
+stack* Pop(stack* pStack, void** pResult)
+{
+	stack* p;
+	if (!pStack)
+	{
+		*pResult = 0;
+		return pStack;
+	}
+	*pResult = pStack->pObject;
+	p = pStack->pNext;
+	free(pStack);
+	return p;
+}
+stack* Push(stack* pStack, void* pNode)
+{
+	errno = 0;
+	stack* pNew;
+	if (!pNode)
+	{
+		errno = EINVAL;
+		return pStack;
+	}
+	pNew = (stack*)malloc(sizeof(stack));
+	if (!pNew)
+		return 0;
+	pNew->pObject = pNode;
+	pNew->pNext = pStack;
+	return pNew;
 }
 Node* CreateBinaryTree(HeaderA* pStruct6)
 {
-	HeaderA* pHeader;
-	Object9* pObject9;
-	pObject9 = (Object9*)pHeader->pObject;
-	Node* pNew = (Node*)malloc(sizeof(Node));
-	pNew->pObject = pObject9->Code;
-	return 0;
+	HeaderA* pHeader = pStruct6;
+	Object9* pObjectHeader;
+	Object9* temp;
+	Node* tree;
+	Node* root = NULL;
+	while (1) //header loop
+	{
+		if (pHeader == NULL)
+		{
+			break;
+		}
+		else
+		{
+			pObjectHeader = (Object9*)pHeader->pObject;
+			while (pObjectHeader != NULL) // Object loop
+			{
+				Node* pNew = (Node*)malloc(sizeof(Node));// uus tipp
+				if (!pNew)
+				{
+					break;
+				}
+				pNew->pObject = pObjectHeader;
+				pNew->pLeft = NULL;
+				pNew->pRight = NULL;
+				tree = root;
+				while (1)
+				{
+					if (!root)
+					{
+						root = pNew;
+						tree = root;
+						break;
+					}
+					if (((ob9*)pNew->pObject)->Code > ((ob9*)(tree->pObject))->Code)
+					{
+						if (tree->pRight == NULL)
+						{
+							tree->pRight = pNew;
+							break;
+						}
+						else
+						{
+							tree = tree->pRight;
+						}
+					}
+					else
+					{
+						if (tree->pLeft == NULL)
+						{
+							tree->pLeft = pNew;
+							break;
+
+						}
+						else
+						{
+							tree = tree->pLeft;
+						}
+					}
+				}
+				temp = (Object9*)pHeader->pObject;
+				pObjectHeader = pObjectHeader->pNext;
+				if (temp == pObjectHeader)
+				{
+					break;
+				}
+			}
+			pHeader = pHeader->pNext;
+
+		}
+
+	}
+
+	return root;
+}
+void TreeTraversal(Node* pTree)
+{
+	stack* pStack = 0;
+	Node* p1 = pTree, * p2;
+
+	if (!pTree)
+		return;
+	do
+	{
+
+		while (p1)
+		{
+			pStack = Push(pStack, p1);
+			p1 = p1->pLeft;
+		}
+		pStack = Pop(pStack, (void**)& p2);
+		printf(" %s %lu %02d %02s %04d\n", ((ob9*)p2->pObject)->pID, ((ob9*)p2->pObject)->Code, ((ob9*)p2->pObject)->pDate3->Day, ((ob9*)p2->pObject)->pDate3->pMonth, ((ob9*)p2->pObject)->pDate3->Year);
+		p1 = p2->pRight;
+
+	} while (!(!pStack && !p1));
 }
 void PrintObjects(HeaderA* pStruct6)
 {
@@ -134,10 +384,6 @@ void PrintObjects(HeaderA* pStruct6)
 		}
 		pHeader = pHeader->pNext;
 	}
-}
-Node* CreateBinaryTree(HeaderA* pStruct6)
-{
-	return nullptr;
 }
 int InsertNewObject(HeaderA** pStruct6, char* pNewID, int NewCode)
 {
@@ -494,31 +740,3 @@ Object9* RemoveExistingObject(HeaderA** pStruct6, char* pExistingID)
 	}
 	return 0;
 }
-/*	while (pExistingID != NULL)	//kontrollin kas pExistingID vastab formaadile
-	{
-		if ('A' <= pExistingID[0] && pExistingID[0] <= 'Z')
-		{
-			while (pExistingID[i + 1] != '\0')
-			{
-				if (pExistingID[i + 1] >= 'a' && pExistingID[i + 1] <= 'z')
-				{
-					break;
-				}
-				else
-				{
-					printf("\n cannot enter given identifier \n");
-					return 0;
-
-				}
-			}
-			break;
-		}
-		else
-		{
-			printf("\n cannot enter given identifier \n");
-			return 0;
-		}
-		i++;
-	}*/
-/*esimene
-*/
